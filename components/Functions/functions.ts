@@ -80,7 +80,12 @@ export const getData = async (
   };
 
   fetch("/api/typing/10")
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
       // Check for server-side error first
       if (data.error) {
