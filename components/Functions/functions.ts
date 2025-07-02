@@ -81,13 +81,17 @@ export const getData = async (
 
   fetch("/api/typing/10")
     .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
+      return response.json().then(data => ({ data, ok: response.ok, status: response.status }));
     })
-    .then(data => {
-      // Check for server-side error first
+    .then(({ data, ok, status }) => {
+      // Check for HTTP error status first
+      if (!ok) {
+        console.error(`HTTP error! status: ${status}`);
+        useFallbackQuote();
+        return;
+      }
+
+      // Check for server-side error
       if (data.error) {
         console.error('Server-side error:', data.error);
         useFallbackQuote();
